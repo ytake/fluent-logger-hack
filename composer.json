@@ -1,0 +1,29 @@
+{
+  "name": "ytake/fluent-logger-hack",
+  "type": "library",
+  "description": "A structured logger for Fluentd (Hacm/HHVM)",
+  "license": "MIT",
+  "keywords": [
+    "hack",
+    "hhvm",
+    "fluentd",
+    "logger"
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "hhvm": "^4.8",
+    "hhvm/hsl": "^4.0",
+    "hhvm/hsl-experimental": "^4.0",
+    "hhvm/hhvm-autoload": "^2.0.0"
+  },
+  "require-dev": {
+    "hhvm/hacktest": "^1.5",
+    "facebook/fbexpect": "^2.5.7",
+    "hhvm/hhast": "^4.8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ytake\\Fluent\\Logger\\": "src/"
+    }
+  }
+}
