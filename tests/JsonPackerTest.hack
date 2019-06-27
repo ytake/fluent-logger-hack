@@ -14,36 +14,41 @@ final class JsonPackerTest extends HackTest {
     ];
   }
 
-  final public static function provideToEntity(): vec<Entity> {
-    return vec[
-      new Entity(
-        self::TAG,
-        self::expectedData(),
-        self::EXPECTED_TIME
-      )
+  public static function provideToEntity(): varray<vec<Entity>> {
+    return varray[
+      vec[
+        new Entity(
+          self::TAG,
+          self::expectedData(),
+          self::EXPECTED_TIME
+        )
+      ],
     ];
   }
 
   <<DataProvider('provideToEntity')>>
   public function testShouldReturnExpectedPackResult(
     Entity $entity
-  ): void { 
+  ): void {
     $packer = new JsonPacker();
     expect($packer->pack($entity))->toMatchRegExp('/["%s",%d,{"%s":"%s"}]/');
   }
 
+  <<DataProvider('provideToEntity')>>
   public function testShouldReturnPackTag(
     Entity $entity
   ): void {
     expect($entity->getTag())->toBeSame(self::TAG);
   }
 
+  <<DataProvider('provideToEntity')>>
   public function testShouldReturnPackTime(
     Entity $entity
   ): void {
     expect($entity->getTime())->toBeSame(self::EXPECTED_TIME);
   }
 
+  <<DataProvider('provideToEntity')>>
   public function testShouldReturnPackData(
     Entity $entity
   ): void {

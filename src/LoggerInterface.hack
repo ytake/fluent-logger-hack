@@ -2,12 +2,12 @@ namespace Ytake\Fluent\Logger;
 
 interface LoggerInterface {
 
-  public function sendLog(
+  public function sendLogAsync(
     string $tag,
     dict<arraykey, mixed> $data
-  ): void;
+  ): Awaitable<bool>;
 
-  public function sendEntity(
+  public function sendEntityAsync(
     Entity $entity
-  ): void;
+  ): Awaitable<bool>;
 }
