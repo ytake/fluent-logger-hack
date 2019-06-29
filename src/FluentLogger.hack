@@ -1,6 +1,5 @@
 namespace Ytake\Fluent\Logger;
 
-
 class FluentLogger implements LoggerInterface {
 
   public function __construct(
@@ -15,6 +14,10 @@ class FluentLogger implements LoggerInterface {
     try {
       await $this->handle->writeAsync($this->packer->pack($entity));
     } catch (Exception\SocketErrorException $e) {
+      await $this->handle->closeAsync();
+      await $this->errorHandler->handleAsync(static::class, $entity, $e->getMessage());
+      return false;
+    } catch (Exception\FailedWriteException $e) {
       await $this->handle->closeAsync();
       await $this->errorHandler->handleAsync(static::class, $entity, $e->getMessage());
       return false;

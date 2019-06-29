@@ -11,18 +11,25 @@ use function usleep;
 use function pow;
 use function error_log;
 use function var_export;
+use function stream_set_blocking;
 
 class LogWriteHandle implements IO\UserspaceHandle {
 
   private bool $isAwaitable = true;
-  private resource $socket;
   private ?Awaitable<mixed> $lastOperation;
+  protected ?(function(): resource) $reconnector;
 
   public function __construct(
-    private FluentLoggerClient $client
+    private resource $socket,
+    private Option $option
   ) {
-    $this->socket = $client->create();
-    \stream_set_blocking($this->socket, false);
+    stream_set_blocking($this->socket, false);
+  }
+
+  public function setReconnector(
+    (function(): resource) $reconnector
+  ): void {
+    $this->reconnector = $reconnector;
   }
 
   protected function queuedAsync<T>(
@@ -66,15 +73,14 @@ class LogWriteHandle implements IO\UserspaceHandle {
   ): Awaitable<mixed> {
     $buffer = $packed = $bytes;
     $retry  = $written = 0;
-    $options = $this->client->getOptions();
     return $this->queuedAsync(async () ==> {
       while ($written < Str\length($packed)) {
         $nwrite = $this->writeBlocking($buffer);
         if ($nwrite === 0) {
-          if (!Shapes::idx($options, 'retry_socket', true)) {
+          if (!Shapes::idx($this->option, 'retry_socket', true)) {
             throw new Exception\SendErrorException('could not send entities');
           }
-          if ($retry > Shapes::at($options, 'max_write_retry')) {
+          if ($retry > Shapes::at($this->option, 'max_write_retry')) {
             throw new Exception\FailedWriteException(
               'failed fwrite retry: retry count exceeds limit.'
             );
@@ -95,15 +101,15 @@ class LogWriteHandle implements IO\UserspaceHandle {
             }
           }
           $backOff = Shapes::idx(
-            $options,
+            $this->option,
             'backoff_mode',
-            FluentLoggerClient::BACKOFF_TYPE_EXPONENTIAL
+            Client::BACKOFF_TYPE_EXPONENTIAL
           );
-          if ($backOff === FluentLoggerClient::BACKOFF_TYPE_EXPONENTIAL) {
+          if ($backOff === Client::BACKOFF_TYPE_EXPONENTIAL) {
             $this->backoffExponential(3, $retry);
           } else {
             usleep(
-              Shapes::idx($options, 'usleep_wait', FluentLoggerClient::USLEEP_WAIT)
+              Shapes::idx($this->option, 'usleep_wait', Client::USLEEP_WAIT)
             );
           }
           $retry++;
@@ -129,7 +135,10 @@ class LogWriteHandle implements IO\UserspaceHandle {
 
   protected function reconnect(): void {
     if ($this->socket is resource) {
-      $this->socket = $this->client->create();
+      if ($this->reconnector is nonnull) {
+        $callback = $this->reconnector;
+        $this->socket = $callback();
+      }
     }
   }
 
@@ -144,7 +153,9 @@ class LogWriteHandle implements IO\UserspaceHandle {
     usleep(pow($base, $attempt) * 1000);
   }
 
-  private function errorMessage<T>(Traversable<T> $errors): void {
+  private function errorMessage<T>(
+    Traversable<T> $errors
+  ): void {
     error_log(
       "unhandled error detected. please report this issue to http://github.com/ytale/fluent-logger-hack/issues: "
       . var_export($errors, true)

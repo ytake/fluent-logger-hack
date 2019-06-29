@@ -8,11 +8,11 @@ final class JsonPacker implements PackerInterface {
     Entity $entity
   ): string {
     return json_encode(
-      array(
+      vec[
         $entity->getTag(),
         $entity->getTime(),
         $entity->getData()
-      )
+      ]
     );
   }
 }

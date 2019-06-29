@@ -9,11 +9,7 @@ class Entity {
     protected string $tag,
     protected dict<arraykey, mixed> $data = dict[],
     protected num $time = time()
-  ) {
-    if ($time is float) {
-      $this->time = $time;
-    }
-  }
+  ) {}
 
   public function getTag(): string {
     return $this->tag;

@@ -7,7 +7,7 @@ use function stream_set_timeout;
 use const STREAM_CLIENT_CONNECT;
 use const STREAM_CLIENT_PERSISTENT;
 
-class FluentLoggerClient {
+class Client {
 
   const float CONNECTION_TIMEOUT = 3.0;
   const int SOCKET_TIMEOUT = 3;
@@ -26,24 +26,24 @@ class FluentLoggerClient {
   const int BACKOFF_TYPE_USLEEP = 0x02;
 
   protected vec<string> $acceptableOptions = vec[
-    "socket_timeout",
-    "connection_timeout",
-    "backoff_mode",
-    "backoff_base",
-    "usleep_wait",
-    "persistent",
-    "retry_socket",
-    "max_write_retry",
+    'socket_timeout',
+    'connection_timeout',
+    'backoff_mode',
+    'backoff_base',
+    'usleep_wait',
+    'persistent',
+    'retry_socket',
+    'max_write_retry',
   ];
 
   protected Option $options = shape(
-    "socket_timeout" => self::SOCKET_TIMEOUT,
-    "connection_timeout" => self::CONNECTION_TIMEOUT,
-    "backoff_mode" => self::BACKOFF_TYPE_USLEEP,
-    "backoff_base" => 3,
-    "usleep_wait" => self::USLEEP_WAIT,
-    "persistent" => false,
-    "retry_socket" => true,
+    'socket_timeout' => self::SOCKET_TIMEOUT,
+    'connection_timeout' => self::CONNECTION_TIMEOUT,
+    'backoff_mode' => self::BACKOFF_TYPE_USLEEP,
+    'backoff_base' => 3,
+    'usleep_wait' => self::USLEEP_WAIT,
+    'persistent' => false,
+    'retry_socket' => true,
     'max_write_retry' => self::MAX_WRITE_RETRY,
   );
 
