@@ -83,7 +83,7 @@ class LogWriteHandle implements IO\UserspaceHandle {
     return $result as int;
   }
 
-  public function writeAsync(
+  public async function writeAsync(
     string $bytes
   ): Awaitable<mixed> {
     $buffer = $packed = $bytes;
