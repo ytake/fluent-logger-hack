@@ -1,7 +1,7 @@
 {
   "name": "ytake/fluent-logger-hack",
   "type": "library",
-  "description": "A structured logger for Fluentd (Hacm/HHVM)",
+  "description": "A structured logger for Fluentd (Hack/HHVM)",
   "license": "MIT",
   "keywords": [
     "hack",
