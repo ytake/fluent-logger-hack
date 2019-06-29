@@ -1,6 +1,21 @@
+/**
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license.
+ *
+ * Copyright (c) 2019 Yuuki Takezawa
+ */
+
 namespace Ytake\Fluent\Logger;
 
-class FluentLogger implements LoggerInterface {
+class FluentLogger implements LoggerInterface, \IAsyncDisposable {
 
   public function __construct(
     protected LogWriteHandle $handle,
@@ -13,11 +28,7 @@ class FluentLogger implements LoggerInterface {
   ): Awaitable<bool> {
     try {
       await $this->handle->writeAsync($this->packer->pack($entity));
-    } catch (Exception\SocketErrorException $e) {
-      await $this->handle->closeAsync();
-      await $this->errorHandler->handleAsync(static::class, $entity, $e->getMessage());
-      return false;
-    } catch (Exception\FailedWriteException $e) {
+    } catch (Exception\AbstractLoggerException $e) {
       await $this->handle->closeAsync();
       await $this->errorHandler->handleAsync(static::class, $entity, $e->getMessage());
       return false;
@@ -36,5 +47,9 @@ class FluentLogger implements LoggerInterface {
     Entity $entity
   ): Awaitable<bool> {
     return await $this->postAsync($entity);
+  }
+
+  public async function __disposeAsync(): Awaitable<void> {
+    await $this->handle->closeAsync();
   }
 }

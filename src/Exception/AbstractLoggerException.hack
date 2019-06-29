@@ -15,8 +15,12 @@
 
 namespace Ytake\Fluent\Logger\Exception;
 
-use type Exception;
+use type RuntimeException;
 
-final class UnsupportedTransportException extends Exception {
+<<__Sealed(
+  FailedWriteException::class,
+  SocketErrorException::class
+)>>
+abstract class AbstractLoggerException extends RuntimeException {
 
 }
