@@ -16,7 +16,8 @@ final class FluentLoggerTest extends HackTest {
     );
     fseek($socket, 0);
     $actual = "";
-    while ($string = fread($socket, 1024)) {
+    $string = fread($socket, 1024);
+    while ($string) {
       $actual .= $string;
     }
     expect($actual)->toMatchRegExp('/["%s",%d,{"%s":"%s"}]/');
