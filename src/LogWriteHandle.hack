@@ -17,6 +17,7 @@ namespace Ytake\Fluent\Logger;
 
 use namespace HH\Lib\Str;
 use namespace HH\Lib\Experimental\IO;
+use namespace Ytake\Fluent\Logger\Exception;
 use function fwrite;
 use function feof;
 use function fflush;
@@ -78,7 +79,7 @@ class LogWriteHandle implements IO\UserspaceHandle {
   ): int {
     $result = fwrite($this->socket, $bytes);
     if ($result === false) {
-      throw new IO\WriteException('could not write message');
+      throw new Exception\FailedWriteException('could not write message');
     }
     return $result as int;
   }
@@ -86,8 +87,10 @@ class LogWriteHandle implements IO\UserspaceHandle {
   public async function writeAsync(
     string $bytes
   ): Awaitable<mixed> {
-    $buffer = $packed = $bytes;
-    $retry  = $written = 0;
+    $packed = $bytes;
+    $buffer = $packed;
+    $written = 0;
+    $retry  = $written;
     return $this->queuedAsync(async () ==> {
       while ($written < Str\length($packed)) {
         $nwrite = $this->writeBlocking($buffer);

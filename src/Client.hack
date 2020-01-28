@@ -101,8 +101,8 @@ class Client {
     // for now, we use error control operators.
     $socket = @stream_socket_client(
       $this->transportUri->getNormalizeUri(),
-      &$errno,
-      &$errstr,
+      inout $errno,
+      inout $errstr,
       Shapes::idx($this->options, 'connection_timeout', self::CONNECTION_TIMEOUT),
       $connectOption
     );
