@@ -10,7 +10,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2019 Yuuki Takezawa
+ * Copyright (c) 2019-2020 Yuuki Takezawa
  */
 
 namespace Ytake\Fluent\Logger\Exception;

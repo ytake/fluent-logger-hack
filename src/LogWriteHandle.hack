@@ -10,13 +10,13 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license.
  *
- * Copyright (c) 2019 Yuuki Takezawa
+ * Copyright (c) 2019-2020 Yuuki Takezawa
  */
 
 namespace Ytake\Fluent\Logger;
 
 use namespace HH\Lib\Str;
-use namespace HH\Lib\Experimental\IO;
+use namespace HH\Lib\IO;
 use namespace Ytake\Fluent\Logger\Exception;
 use function fwrite;
 use function feof;
@@ -29,7 +29,7 @@ use function error_log;
 use function var_export;
 use function stream_set_blocking;
 
-class LogWriteHandle implements IO\UserspaceHandle {
+class LogWriteHandle implements IO\Handle {
 
   private bool $isAwaitable = true;
   private ?Awaitable<mixed> $lastOperation;
